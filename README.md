@@ -1,4 +1,10 @@
-# clamav-unofficial-sigs [![Build Status](https://travis-ci.org/extremeshok/clamav-unofficial-sigs.svg?branch=master)](https://travis-ci.org/extremeshok/clamav-unofficial-sigs)
+# clamav-unofficial-sigs [![Build Status](https://travis-ci.org/extremeshok/clamav-unofficial-sigs.svg?branch=master)](https://travis-ci.org/extremeshok/clamav-unofficial-sigs) [![GitHub Release](https://img.shields.io/github/release/extremeshok/clamav-unofficial-sigs.svg?label=Latest)](https://github.com/extremeshok/clamav-unofficial-sigs/releases/latest)
+
+[![Code Climate](https://codeclimate.com/github/extremeshok/clamav-unofficial-sigs/badges/gpa.svg)](https://codeclimate.com/github/extremeshok/clamav-unofficial-sigs)
+[![Test Coverage](https://codeclimate.com/github/extremeshok/clamav-unofficial-sigs/badges/coverage.svg)](https://codeclimate.com/github/extremeshok/clamav-unofficial-sigs/coverage)
+[![Issue Count](https://codeclimate.com/github/extremeshok/clamav-unofficial-sigs/badges/issue_count.svg)](https://codeclimate.com/github/extremeshok/clamav-unofficial-sigs)
+
+
 ClamAV Unofficial Signatures Updater
 
 Github fork of the sourceforge hosted and non maintained utility.
@@ -6,7 +12,7 @@ Github fork of the sourceforge hosted and non maintained utility.
 ## Maintained and provided by https://eXtremeSHOK.com
 
 ## Description
-The clamav-unofficial-sigs script provides a simple way to download, test, and update third-party signature databases provided by Sanesecurity, FOXHOLE, OITC, Scamnailer, BOFHLAND, CRDF, Porcupine, Securiteinfo, MalwarePatrol. The package also contains cron, logrotate, and man files.
+The clamav-unofficial-sigs script provides a simple way to download, test, and update third-party signature databases provided by Sanesecurity, FOXHOLE, OITC, Scamnailer, BOFHLAND, CRDF, Porcupine, Securiteinfo, MalwarePatrol, Yara-Rules Project, etc. The script will also generate and install cron, logrotate, and man files.
 
 #### Try our custom spamassasin plugin: https://github.com/extremeshok/spamassassin-extremeshok_fromreplyto
 
@@ -15,18 +21,28 @@ Please post them on the issue tracker : https://github.com/extremeshok/clamav-un
 
 ### Submit Patches / Pull requests to the "Dev" Branch
 
+### Required Ports / Firewall Exceptions
+* rsync: TCP port 873
+* wget/curl : TCP port 443
+
+### Supported Operating Systems
+Debian, Ubuntu, Raspbian, CentOS (RHEL and clones), OpenBSD, FreeBSD, OpenSUSE, Archlinux, Mac OS X, Slackware, Solaris (Sun OS) and derivative systems  
+
 ### Quick Install Guide
 * Download the files to /tmp/
 * Copy clamav-unofficial-sigs.sh to /usr/local/bin/
 * Set 755 permissions on  /usr/local/bin/clamav-unofficial-sigs.sh
 * Make the directory /etc/clamav-unofficial-sigs/
 * Copy the contents of config/ into /etc/clamav-unofficial-sigs/
-* Copy clamav-unofficial-sigs.8 into /usr/share/man/man8/
 * Make the directory /var/log/clamav-unofficial-sigs/
 * Rename the your os.your-distro.conf to os.conf, where your-distro is your distribution
 * Set your user config options in the configs /etc/clamav-unofficial-sigs/user.conf
 * Run the script with --install-cron to install the cron file
 * Run the script with --install-logrotate to install the logrotate file
+* Run the script with --install-man to install the man file
+
+### First Usage
+* Run the script once as your superuser to set all the permissions and create the relevant directories
 
 ### Systemd
 * Copy the contents of systemd/ into to /etc/systemd/
@@ -50,8 +66,12 @@ Please post them on the issue tracker : https://github.com/extremeshok/clamav-un
 
 ```setsebool -P antivirus_can_scan_system true```
 
-### Yara Rule Support (as of June 2015)
-Requires clamav 0.99 or above : http://yararules.com 
+### Yara Rule Support automatically enabled (as of April 2016)
+Since usage yara rules requires clamav 0.99 or above, they will be automatically deactivated if your clamav is older than the required version
+
+### Yara-Rules Project Support (as of June 2015)
+Usage of free Yara-Rules Project: http://yararules.com
+- Enabled by default
 
 Current limitations of clamav support : http://blog.clamav.net/search/label/yara
 
@@ -78,7 +98,123 @@ Usage of free Linux Malware Detect clamav signatures: https://www.rfxn.com/proje
  - Enabled by default, no configuration required
 
 ## Change Log
-### Version 5.1.0 (updated 2016-04-08)
+
+### Version 5.4.1 (updated 2016-06-20)
+ - eXtremeSHOK.com Maintenance
+ - Disable installation when either pkg_mgr or pkg_rm is defined.
+ - Minor refactoring
+ - Update master.conf with the new Yara-rules project file names 
+ - Incremented the config to version 69
+ 
+### Version 5.4
+ - eXtremeSHOK.com Maintenance
+ - Added Solaris 10 and 11 configs
+ - When under Solaris we define our own which function
+ - Define grep_bin variable, use gnu grep on sun os
+ - Fallback to gpg2 if gpg not found, 
+ - Added support for csw gnupg on solaris
+ - Trap the keyboard interrupt (ctrl+c) and gracefully exit
+ - Added CentOS 7 Atomic config @deajan
+ - Minor refactoring and removing of unused variables
+ - Removed CRDF signatures as per Sanesecurity #124
+ - Added more Yara rule project Rules
+ - Incremented the config to version 68
+
+### Version 5.3.2
+ - eXtremeSHOK.com Maintenance
+ - Bug Fix: Additional Databases not downloading
+ - Added sanesecurity_update_hours option to limit updating to once every 2 hours
+ - Added additional_update_hours option to limit updating to once every 4 hours
+ - Refactor Additional Database File Update code
+ - Updated osx config with correct group for homebrew
+
+### Version 5.3.1
+ - eXtremeSHOK.com Maintenance
+ - Bug Fix: for GPG Signature test FAILED by @DamianoBianchi
+ - Remove unused $GETOPT
+ - Refactor clamscan_integrity_test_specific_database_file (--test-database)
+ - Refactor gpg_verify_specific_sanesecurity_database_file (--gpg-verify)
+ - Big fix: missing $pid_dir
+
+### Version 5.3.0
+ - eXtremeSHOK.com Maintenance
+ - Major change: Updated to use new database structure, now allows all low/medium/high databases to be enabled or disabled.
+ - Major change: curl replaced with wget (will fallback to curl is wget is not installed)
+ - Major change: script now functions correctly as the clamav user when started under cron
+ - Added fallback to curl if wget is not available
+ - Added locking (Enable pid file to prevent issues with multiple instances)
+ - Added retries to fetching downloads
+ - Code refactor: if wget repaced with if $? -ne 0
+ - Enhancement: Verify the clam_user and clam_group actually exists on the system
+ - Added function : xshok_user_group_exists, to check if a specific user and group exists
+ - Bug Fix: setmode only if is root
+ - Bug Fix: eval not working on certain systems
+ - Bug fix: rsync output not correctly silenced
+ - Code refactor: remove legacy `..` with $(...)
+ - Code refactor: replace [ ... -a ... ] with [ ... ] && [ ... ]
+ - Code refactor: replace [ ... -o ... ] with [ ... ] || [ ... ]
+ - Code refactor: replace cat "..." with done < ... from loops
+ - Code refactor: convert for loops using files to while loops
+ - Code refactor: read replaced with read -r
+ - Code refactor: added cd ... || exit , to handle a failed cd
+ - Code refactor: double quoted all varibles
+ - Code refactor: refactor all "ls" iterations to use globs
+ - Defined missing uname_bin variable
+ - Added function xshok_database
+ - Set minimum config required to 65
+ - Bump config to 65
+
+### Version 5.2.2
+ - eXtremeSHOK.com Maintenance
+ - Added --install-all Install and generate the cron, logroate and man files, autodetects the values $oft based on your config files
+ - Added functions: xshok_prompt_confirm, xshok_is_file, xshok_is_subdir
+ - Replaced Y/N prompts with xshok_prompt_confirm
+ - Bug Fix for disabled databases being removed when the remove_disabled_databases is set to NO (default)
+ - Added more warnings to remove_script and made it double confirmed
+ - Remove_script will only remove work_dir if its a sub directory
+ - Remove_script will only remove files if they are files
+ - Removed -r switch, --remove-script needs to be used instead of both -r and --remove-script
+ - Fixed: remove_script not removing logrotate file, cron file, man file
+
+### Version 5.2.1
+ - eXtremeSHOK.com Maintenance
+ - Minor bugfix for Sanesecurity_sigtest.yara Sanesecurity_spam.yara files being removed incorrectly
+ - Minor fix: yararulesproject_enabled not yararulesproject_enable
+
+### Version 5.2.0
+ - eXtremeSHOK.com Maintenance 
+ - Refactor some functions
+ - Added --install-man this will automatically generate and install the man (help) file
+ - Yararules and yararulesproject enabled by default
+ - Added clamav version detection to automatically disable yararules and yararulesproject if the current clamav version does not support them
+ - Database files ending with .yar/.yara/.yararules will automatically be disabled from the database if yara rules are not supported
+ - Script options are added to the man file
+ - Fixed hardcoded logrotate and cron in remove_script
+ - Fixed incorrectly assigned logrotate varibles in install-logrotate
+ - Config added info for port/package maintainers regarding:  pkg_mgr and pkg_rm
+ - Removed pkg_mgr and pkg_rm from freebsd and openbsd os configs
+ - Allow overriding of all the individual workdirs, this is mainly to aid package maintainers
+ - Rename sanesecurity_dir to work_dir_sanesecurity, securiteinfo_dir to work_dir_securiteinfo, malwarepatrol_dir to work_dir_malwarepatrol, yararules_dir to work_dir_yararules, add_dir to work_dir_add, gpg_dir to work_dir_gpg, work_dir_configs to work_dir_work_configs
+ - Rename yararules_enabled to yararulesproject_enabled
+ - Rename all yararules to yararulesproject
+ - Fix to prevent disabled databases processing certian things which will not be used as they are disabled
+ - Set minimum config required to 62
+ - Bump config to 62
+
+### Version 5.1.1
+ - eXtremeSHOK.com Maintenance 
+ - Added OS X and openbsd configs
+ - Fixed host fallback sed issues by @MichaelKuch
+ - Suppress most error messages of chmod and chown
+ - check permissions before chmod
+ - Added the config option remove_disabled_databases # Default is "no", if enabled when a database is disabled we will remove the associated database files.
+ - Added function xshok_mkdir_ownership
+ - Do not set permissions of the log, cron and logrotate dirs
+ - Fix: fallback for missing gpg -r option on OS X
+ - Update sanesecurity signatures
+ - Bump config to 61
+
+### Version 5.1.0
  - eXtremeSHOK.com Maintenance 
  - Added --install-cron this will automatically generate and install the cron file
  - Added --install-logrotate this will automatically generate and install the logrotate file
@@ -91,7 +227,7 @@ Usage of free Linux Malware Detect clamav signatures: https://www.rfxn.com/proje
  - Set minimum config required to 60
  - Bump config to 60
 
-### Version 5.0.6 (updated 2016-04-04)
+### Version 5.0.6
  - eXtremeSHOK.com Maintenance 
  - Updated winnow databases as per information from Tom @ OITC
  - Bump config to 58
@@ -347,11 +483,11 @@ Usage: clamav-unofficial-sigs.sh [OPTION] [PATH|FILE]
 
 -c, --config    Use a specific configuration file or directory
         eg: '-c /your/dir' or ' -c /your/file.name'
-        Note: If a directory is specified the directory must contain atleast
-        master.conf, os.conf or user.conf.
+        Note: If a directory is specified the directory must contain atleast:
+        master.conf, os.conf or user.conf
         Default Directory: /etc/clamav-unofficial-sigs
 
--F, --force         Force all databases to be downloaded, could cause ip to be blocked
+-F, --force     Force all databases to be downloaded, could cause ip to be blocked
 
 -h, --help      Display this script's help and usage information
 
@@ -383,11 +519,8 @@ Usage: clamav-unofficial-sigs.sh [OPTION] [PATH|FILE]
         data strings, with one data string per line.  Additional
         information is provided when using this flag
 
--r, --remove-script     Remove the clamav-unofficial-sigs script and all of
-        its associated files and databases from the system
-
 -t, --test-database     Clamscan integrity test a specific database file
-        eg: '-s filename.ext' (do not include file path)
+        eg: '-t filename.ext' (do not include file path)
 
 -o, --output-triggered  If HAM directory scanning is enabled in the script's
         configuration file, then output names of any third-party
@@ -400,9 +533,25 @@ Usage: clamav-unofficial-sigs.sh [OPTION] [PATH|FILE]
         if the original signature is either modified or removed from
         the third-party signature database
 
---check-clamav  If ClamD status check is enabled and the socket path is correctly specified
-        then test to see if clamd is running or not
+--check-clamav  If ClamD status check is enabled and the socket path is correctly
+        specifiedthen test to see if clamd is running or not
 
-### Script updates can be found at: https://github.com/extremeshok/clamav-unofficial-sigs
+--install-all   Install and generate the cron, logroate and man files, autodetects the values
+         based on your config files
+
+--install-cron  Install and generate the cron file, autodetects the values
+        based on your config files
+
+--install-logrotate     Install and generate the logrotate file, autodetects the
+        values based on your config files
+
+--install-man   Install and generate the man file, autodetects the
+         values based on your config files
+
+--remove-script     Remove the clamav-unofficial-sigs script and all of
+        its associated files and databases from the system
+
+## Script updates can be found at: 
+### https://github.com/extremeshok/clamav-unofficial-sigs
 
 Original Script can be found at: http://sourceforge.net/projects/unofficial-sigs
