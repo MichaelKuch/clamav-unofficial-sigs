@@ -21,10 +21,17 @@ Please post them on the issue tracker : https://github.com/extremeshok/clamav-un
 
 ### Submit Patches / Pull requests to the "Dev" Branch
 
+### Required Ports / Firewall Exceptions
+* rsync: TCP port 873
+* wget/curl : TCP port 443
+
+### Supported Operating Systems
+Debian, Ubuntu, Raspbian, CentOS (RHEL and clones), OpenBSD, FreeBSD, OpenSUSE, Archlinux, Mac OS X, Slackware, Solaris (Sun OS) and derivative systems  
+
 ### Quick Install Guide
 * Download the files to /tmp/
-* Copy clamav-unofficial-sigs.sh to /usr/local/bin/
-* Set 755 permissions on  /usr/local/bin/clamav-unofficial-sigs.sh
+* Copy clamav-unofficial-sigs.sh to /usr/local/sbin/
+* Set 755 permissions on  /usr/local/sbin/clamav-unofficial-sigs.sh
 * Make the directory /etc/clamav-unofficial-sigs/
 * Copy the contents of config/ into /etc/clamav-unofficial-sigs/
 * Make the directory /var/log/clamav-unofficial-sigs/
@@ -92,10 +99,58 @@ Usage of free Linux Malware Detect clamav signatures: https://www.rfxn.com/proje
 
 ## Change Log
 
-### Version 5.X.X (updated 2016-XX-XX)
+### Version 5.4.1 (updated 2016-06-20)
  - eXtremeSHOK.com Maintenance
- - Major change: Updated to use new database structure
- - Code refactor: remove legacy `..` replaced with $(...)
+ - Disable installation when either pkg_mgr or pkg_rm is defined.
+ - Minor refactoring
+ - Update master.conf with the new Yara-rules project file names 
+ - Incremented the config to version 69
+ 
+### Version 5.4
+ - eXtremeSHOK.com Maintenance
+ - Added Solaris 10 and 11 configs
+ - When under Solaris we define our own which function
+ - Define grep_bin variable, use gnu grep on sun os
+ - Fallback to gpg2 if gpg not found, 
+ - Added support for csw gnupg on solaris
+ - Trap the keyboard interrupt (ctrl+c) and gracefully exit
+ - Added CentOS 7 Atomic config @deajan
+ - Minor refactoring and removing of unused variables
+ - Removed CRDF signatures as per Sanesecurity #124
+ - Added more Yara rule project Rules
+ - Incremented the config to version 68
+
+### Version 5.3.2
+ - eXtremeSHOK.com Maintenance
+ - Bug Fix: Additional Databases not downloading
+ - Added sanesecurity_update_hours option to limit updating to once every 2 hours
+ - Added additional_update_hours option to limit updating to once every 4 hours
+ - Refactor Additional Database File Update code
+ - Updated osx config with correct group for homebrew
+
+### Version 5.3.1
+ - eXtremeSHOK.com Maintenance
+ - Bug Fix: for GPG Signature test FAILED by @DamianoBianchi
+ - Remove unused $GETOPT
+ - Refactor clamscan_integrity_test_specific_database_file (--test-database)
+ - Refactor gpg_verify_specific_sanesecurity_database_file (--gpg-verify)
+ - Big fix: missing $pid_dir
+
+### Version 5.3.0
+ - eXtremeSHOK.com Maintenance
+ - Major change: Updated to use new database structure, now allows all low/medium/high databases to be enabled or disabled.
+ - Major change: curl replaced with wget (will fallback to curl is wget is not installed)
+ - Major change: script now functions correctly as the clamav user when started under cron
+ - Added fallback to curl if wget is not available
+ - Added locking (Enable pid file to prevent issues with multiple instances)
+ - Added retries to fetching downloads
+ - Code refactor: if wget repaced with if $? -ne 0
+ - Enhancement: Verify the clam_user and clam_group actually exists on the system
+ - Added function : xshok_user_group_exists, to check if a specific user and group exists
+ - Bug Fix: setmode only if is root
+ - Bug Fix: eval not working on certain systems
+ - Bug fix: rsync output not correctly silenced
+ - Code refactor: remove legacy `..` with $(...)
  - Code refactor: replace [ ... -a ... ] with [ ... ] && [ ... ]
  - Code refactor: replace [ ... -o ... ] with [ ... ] || [ ... ]
  - Code refactor: replace cat "..." with done < ... from loops
@@ -106,8 +161,10 @@ Usage of free Linux Malware Detect clamav signatures: https://www.rfxn.com/proje
  - Code refactor: refactor all "ls" iterations to use globs
  - Defined missing uname_bin variable
  - Added function xshok_database
+ - Set minimum config required to 65
+ - Bump config to 65
 
-### Version 5.2.2 (updated 2016-04-18)
+### Version 5.2.2
  - eXtremeSHOK.com Maintenance
  - Added --install-all Install and generate the cron, logroate and man files, autodetects the values $oft based on your config files
  - Added functions: xshok_prompt_confirm, xshok_is_file, xshok_is_subdir
@@ -463,7 +520,7 @@ Usage: clamav-unofficial-sigs.sh [OPTION] [PATH|FILE]
         information is provided when using this flag
 
 -t, --test-database     Clamscan integrity test a specific database file
-        eg: '-s filename.ext' (do not include file path)
+        eg: '-t filename.ext' (do not include file path)
 
 -o, --output-triggered  If HAM directory scanning is enabled in the script's
         configuration file, then output names of any third-party

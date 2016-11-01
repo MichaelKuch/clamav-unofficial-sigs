@@ -2,9 +2,18 @@
 engines:
   shellcheck:
     enabled: true
+    checks:
+      SC2001:
+        enabled: false
+      SC2154:
+        enabled: false
+      SC2076:
+        enabled: false
+      SC2086:
+        enabled: false
   fixme:
     enabled: true
 ratings:
   paths: []
 exclude_paths:
-  - .travis/
+  - .t/
